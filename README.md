@@ -29,7 +29,7 @@ the workload with charts and filters.
 
 ```bash
 # 1. Clone the repo
-git clone <repo-url>
+git clone https://github.com/PapiGelvez/SysdatecDevAssessment.git
 cd <repo>
 
 # 2. Create your .env from the template
