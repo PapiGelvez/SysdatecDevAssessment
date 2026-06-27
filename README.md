@@ -1,6 +1,6 @@
-# 🎫 AI Ticket Workspace
+# AI Ticket Workspace
 
-A full-stack, AI-powered support-ticket management system. Users create tickets,
+A simple full-stack, AI-powered support-ticket management system. Users create tickets,
 an LLM classifies them (category / priority / summary), and a dashboard visualizes
 the workload with charts and filters.
 
@@ -9,34 +9,21 @@ the workload with charts and filters.
 - **Frontend:** React + Vite + Tailwind CSS + Recharts + React Router
 - **Backend:** FastAPI (Python) + SQLAlchemy
 - **Database:** PostgreSQL
-- **AI:** Anthropic Claude (via the official `anthropic` Python SDK)
+- **AI:** Anthropic Claude
 - **Orchestration:** Docker Compose
+
+## Class Diagram
+
+<img width="992" height="640" alt="image" src="https://github.com/user-attachments/assets/e5d319d7-8930-4690-b8bb-73edf58e5203" />
 
 ## Architecture
 
-```
-                    ┌─────────────────────┐
-                    │   Browser (React)   │
-                    │   localhost:5173    │
-                    └──────────┬──────────┘
-                               │  /api/*  (Vite dev proxy)
-                               ▼
-                    ┌─────────────────────┐        ┌────────────────────┐
-                    │   FastAPI backend   │  HTTPS │   Anthropic API    │
-                    │   localhost:8000    │───────▶│   (classification) │
-                    └──────────┬──────────┘        └────────────────────┘
-                               │  SQLAlchemy
-                               ▼
-                    ┌─────────────────────┐
-                    │   PostgreSQL 15     │
-                    │   localhost:5432    │
-                    └─────────────────────┘
-```
+<img width="467" height="480" alt="image" src="https://github.com/user-attachments/assets/f54a37b4-003e-485e-9fd7-cc5ddb65ea01" />
 
 ## Prerequisites
 
-- Docker & Docker Compose
-- An Anthropic API key (https://console.anthropic.com/)
+- Docker and Docker Compose
+- An Anthropic API key
 
 ## Setup
 
@@ -58,22 +45,11 @@ docker compose up --build
 Then open:
 
 - Frontend: http://localhost:5173
-- Backend API docs (Swagger): http://localhost:8000/docs
+- Backend API docs: http://localhost:8000/docs
 
-Database tables are created automatically on backend startup — no migrations needed.
-
-### Optional: choose the classification model
-
-The backend defaults to `claude-haiku-4-5-20251001`. Override it by adding to `.env`
-and passing it through in `docker-compose.yml` (`ANTHROPIC_MODEL`):
-
-```
-ANTHROPIC_MODEL=claude-sonnet-4-6
-```
+Database tables are created automatically on backend startup.
 
 ## API Endpoints
-
-All endpoints are prefixed with `/api`.
 
 ### Users
 | Method | Path               | Description                          |
@@ -105,8 +81,8 @@ All endpoints are prefixed with `/api`.
 
 1. The user opens a ticket and clicks **Classify with AI**.
 2. The frontend calls `POST /api/tickets/{id}/classify`.
-3. The backend sends the ticket text to Claude with a strict system prompt that
-   forces a JSON-only response:
+3. The backend sends the ticket text to Claude with a prompt that
+   forces only JSON responses:
    ```json
    { "category": "Finance|Legal|Procurement|Operations",
      "priority": "High|Medium|Low",
@@ -117,11 +93,11 @@ All endpoints are prefixed with `/api`.
    classification for that ticket is **replaced**.
 5. Category and priority then feed the dashboard pie charts via `/api/stats`.
 
-## Authentication (simple, no JWT)
+## Authentication
 
-Auth is intentionally minimal for this demo:
+Auth is intentionally minimal for this demo (no JWT):
 
-- Passwords are stored as plain text (do **not** use this in production).
+- Passwords are stored as plain text (in production this would change).
 - On login/signup the backend returns `{username, name}`.
 - The frontend stores that object in React Context **and** `localStorage`
   (key `ticket_workspace_user`), so the session survives a page refresh.
